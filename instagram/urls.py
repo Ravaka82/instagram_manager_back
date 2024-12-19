@@ -1,6 +1,6 @@
 from django.urls import path
-from instagram.views import authenticate_instagram_user
+from instagram.views import register_instagram_user
 
 urlpatterns = [
-   path('authenticate_instagram_user', authenticate_instagram_user, name='authenticate_instagram_user'),
+   path('register_instagram_user', register_instagram_user, name='register_instagram_user'),
 ]
