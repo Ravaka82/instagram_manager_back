@@ -34,4 +34,4 @@ class InstagramService:
             raise ValueError(f"Erreur de connexion avec Instagram : {e}")
         except Exception as e:
             # Gérer toute autre erreur généralesss
-            raise ValueError(f"Erreur générale lors de l'authentification : {e}")
+            raise ValueError(f"Erreur générale lors de l'authentification  : {e}")
