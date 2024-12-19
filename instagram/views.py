@@ -4,6 +4,7 @@ from instagram.core.instagram_service import InstagramService
 from rest_framework import status
 from instagram.models import InstagramUser
 
+
 @api_view(['POST'])
 def register_instagram_user(request):
     username = request.data.get('username')
@@ -34,6 +35,21 @@ def register_instagram_user(request):
             "bio": instagram_user.bio,
             "bio_link": instagram_user.bio_link,
         }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+
+    except ValueError as e:
+        return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return JsonResponse({"error": f"Une erreur est survenue : {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def get_all_instagram_user(request):
+    try:
+        instagram_service = InstagramService()
+        users_data = instagram_service.get_all_count()
+
+        return JsonResponse({
+            "users": users_data  
+        }, status=status.HTTP_200_OK)
 
     except ValueError as e:
         return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

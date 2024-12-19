@@ -1,5 +1,6 @@
 from instagrapi import Client
 from instagrapi.exceptions import ClientError, TwoFactorRequired
+from instagram.models import InstagramUser
 
 class InstagramService:
     def __init__(self):
@@ -37,3 +38,20 @@ class InstagramService:
         except Exception as e:
             print(f"Erreur générale : {e}")
             raise ValueError(f"{e}")
+
+    def get_all_count(self):
+        try:
+            instagram_users = InstagramUser.objects.all()
+            user_data = []
+            for user in instagram_users:
+                user_data.append({
+                    "username": user.username,
+                    "profile_picture": user.profile_picture,
+                    "bio": user.bio,
+                    "bio_link": user.bio_link,
+                })
+            return user_data
+
+        except Exception as e:
+            print(f"Erreur lors de la récupération des utilisateurs Instagram : {str(e)}")
+            raise ValueError(f"Erreur lors de la récupération des utilisateurs Instagram : {str(e)}")
