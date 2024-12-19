@@ -7,21 +7,20 @@ class InstagramService:
 
     def authenticate(self, username, password, otp=None):
         try:
-            print(f"Tentative d'authentification pour l'utilisateur : {username}")  # Debug
+            print(f"Tentative d'authentification pour l'utilisateur : {username}")  
             if otp:
-                print("Étape : Connexion avec OTP")  # Debug
+                print("Étape : Connexion avec OTP")  
                 login_response = self.client.login(username, password, verification_code=otp)
                 if not login_response:
-                    print("Erreur : Code OTP incorrect ou échec d'authentification")  # Debug
+                    print("Erreur : Code OTP incorrect ou échec d'authentification")  
                     raise ValueError("Code OTP incorrect ou échec d'authentification.")
             else:
-                print("Étape : Connexion normale")  # Debug
+                print("Étape : Connexion normale")  
                 self.client.login(username, password)
 
-            # Récupérer les informations utilisateur après connexion réussie
             user_info = self.client.account_info()
-            print(f"Connexion réussie. Utilisateur connecté : {user_info.username}")  # Debug
-            print(f"Informations de l'utilisateur : {user_info}")  # Debug
+            print(f"Connexion réussie. Utilisateur connecté : {user_info.username}")  
+            print(f"Informations de l'utilisateur : {user_info}")  
 
             return {
                 "username": user_info.username,
@@ -31,11 +30,11 @@ class InstagramService:
                 "is_authenticated": True,
             }
         except TwoFactorRequired:
-            print("Erreur : Code OTP requis ou incorrect pour l'authentification.")  # Debug
+            print("Erreur : Code OTP requis ou incorrect pour l'authentification.")  
             raise ValueError("Code OTP requis ou incorrect pour l'authentification.")
         except ClientError as e:
-            print(f"Erreur ClientError : {e}")  # Debug
-            raise ValueError(f"Erreur de connexion avec Instagram : {e}")
+            print(f"Nom d'utilisateur ou mot de passe incorrect")  
+            raise ValueError(f"Nom d'utilisateur ou mot de passe incorrect")
         except Exception as e:
-            print(f"Erreur générale : {e}")  # Debug
-            raise ValueError(f"Erreur générale lors de l'authentification : {e}")
+            print(f"Erreur générale : {e}")  
+            raise ValueError(f"{e}")
