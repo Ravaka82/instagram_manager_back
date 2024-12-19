@@ -1,36 +1,37 @@
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
+from instagram.core.instagram_service import InstagramService
 from rest_framework import status
-from .core.instagram_service import InstagramService
-from .models import InstagramAccount
 
 @api_view(['POST'])
-def add_instagram_account(request):
-    # Récupérer les données de la requête
+def authenticate_instagram_user(request):
     username = request.data.get('username')
     password = request.data.get('password')
-    otp = request.data.get('otp')  # Le code OTP pour 2FA, si nécessaire
+    otp = request.data.get('otp')  # OTP est facultatif
 
-    # Vérifier si les données nécessaires sont présentes
+    # Vérification que le nom d'utilisateur et le mot de passe sont fournis
     if not username or not password:
-        return JsonResponse({"error": "Le nom d'utilisateur et le mot de passe sont obligatoires."}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({"error": "Nom d'utilisateur et mot de passe sont requis."}, status=status.HTTP_400_BAD_REQUEST)
 
-    instagram_service = InstagramService()
-    
     try:
-        account_data = instagram_service.authenticate(username, password, otp)
-        
-        # # Si la connexion est réussie, ajouter le compte à la base de données
-        # account = InstagramAccount.objects.create(
-        #     name=account_data['username'],
-        #     profile_picture=account_data['profile_picture'],
-        #     bio=account_data['bio'],
-        #     bio_link=account_data['bio_link'],
-        # )
+        # Créer une instance du service Instagram
+        instagram_service = InstagramService()
 
-        # Retourner une réponse indiquant que le compte a été ajouté avec succès
-        return JsonResponse({"message": "Compte ajouté avec succès!"}, status=status.HTTP_201_CREATED)
-    
+        # Tentative de connexion via le service
+        user_info = instagram_service.authenticate(username, password, otp)
+
+        # Retourner les informations utilisateur en réponse
+        return JsonResponse({
+            "username": user_info["username"],
+            "profile_picture": user_info["profile_picture"],
+            "bio": user_info["bio"],
+            "bio_link": user_info["bio_link"]
+        }, status=status.HTTP_200_OK)
+
     except ValueError as e:
-        # Retourner une erreur si la connexion échoue
+        # En cas d'erreur d'authentification ou d'OTP
         return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        # Gérer toute autre exception
+        return JsonResponse({"error": f"Une erreur est survenue : {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
