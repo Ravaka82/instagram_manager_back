@@ -94,3 +94,48 @@ def get_all_instagram_user(request):
         return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return JsonResponse({"error": f"Une erreur est survenue : {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['PUT'])
+def update_instagram_user(request, username):
+    password = request.data.get('password')
+    full_name = request.data.get('name')
+    bio = request.data.get('bio')
+    bio_link = request.data.get('bio_link')
+    profile_picture_path = request.data.get('profile_picture')
+
+    if not password:
+        return JsonResponse({"error": "Le mot de passe est requis."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        instagram_service = InstagramService()
+        user_info = instagram_service.update_user(
+            username=username,
+            password=password,
+            new_full_name=full_name,
+            new_bio=bio,
+            new_bio_link=bio_link,
+            new_profile_picture_path=profile_picture_path
+        )
+
+        instagram_user, created = InstagramUser.objects.update_or_create(
+            username=user_info["username"],
+            defaults={
+                "name": user_info.get("name"),  
+                "profile_picture": user_info.get("profile_picture"),
+                "bio": user_info.get("bio"),
+                "bio_link": user_info.get("bio_link"),
+            }
+        )
+
+        return JsonResponse({
+            "username": instagram_user.username,
+            "name": instagram_user.name,
+            "profile_picture": instagram_user.profile_picture,
+            "bio": instagram_user.bio,
+            "bio_link": instagram_user.bio_link,
+        }, status=status.HTTP_200_OK)
+
+    except ValueError as e:
+        return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return JsonResponse({"error": f"Une erreur est survenue : {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -2,6 +2,7 @@ from django.db import models
 
 class InstagramUser(models.Model):
     username = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=True, null=True) 
     profile_picture = models.URLField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     bio_link = models.URLField(blank=True, null=True)
