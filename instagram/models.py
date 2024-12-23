@@ -5,6 +5,7 @@ class InstagramUser(models.Model):
     profile_picture = models.URLField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     bio_link = models.URLField(blank=True, null=True)
+    is_master = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'instagram_user'  
